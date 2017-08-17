@@ -100,8 +100,8 @@ class TestShowcaseAuthDetails(ShowcaseFunctionalTestBase):
 
     def test_auth_anon_user_cant_see_manage_button(self):
         '''
-        An anon (not logged in) user can't see the Manage button on an individual
-        showcase details page.
+        An anon (not logged in) user can't see the Manage button on an
+        individual showcase details page.
         '''
         app = self._get_test_app()
 
@@ -152,8 +152,8 @@ class TestShowcaseAuthDetails(ShowcaseFunctionalTestBase):
 
         factories.Dataset(type='showcase', name='my-showcase')
 
-        response = app.get('/api/3/action/ckanext_showcase_show?id=my-showcase',
-                           status=200)
+        response = app.get(
+            '/api/3/action/ckanext_showcase_show?id=my-showcase', status=200)
 
         json_response = json.loads(response.body)
 
@@ -168,8 +168,9 @@ class TestShowcaseAuthDetails(ShowcaseFunctionalTestBase):
 
         factories.Dataset(type='showcase', name='my-showcase')
 
-        response = app.get('/api/3/action/ckanext_showcase_show?id=my-showcase',
-                           status=200, extra_environ={'REMOTE_USER': str(user['name'])})
+        response = app.get(
+            '/api/3/action/ckanext_showcase_show?id=my-showcase',
+            status=200, extra_environ={'REMOTE_USER': str(user['name'])})
 
         json_response = json.loads(response.body)
 
@@ -184,8 +185,9 @@ class TestShowcaseAuthDetails(ShowcaseFunctionalTestBase):
 
         factories.Dataset(type='showcase', name='my-showcase')
 
-        response = app.get('/api/3/action/ckanext_showcase_show?id=my-showcase',
-                           status=200, extra_environ={'REMOTE_USER': str(user['name'])})
+        response = app.get(
+            '/api/3/action/ckanext_showcase_show?id=my-showcase',
+            status=200, extra_environ={'REMOTE_USER': str(user['name'])})
 
         json_response = json.loads(response.body)
 
@@ -246,8 +248,9 @@ class TestShowcaseAuthList(ShowcaseFunctionalTestBase):
 
         factories.Dataset(type='showcase', name='my-showcase')
 
-        response = app.get('/api/3/action/ckanext_showcase_list',
-                           status=200, extra_environ={'REMOTE_USER': str(user['name'])})
+        response = app.get(
+            '/api/3/action/ckanext_showcase_list',
+            status=200, extra_environ={'REMOTE_USER': str(user['name'])})
 
         json_response = json.loads(response.body)
 
@@ -262,8 +265,9 @@ class TestShowcaseAuthList(ShowcaseFunctionalTestBase):
 
         factories.Dataset(type='showcase', name='my-showcase')
 
-        response = app.get('/api/3/action/ckanext_showcase_list',
-                           status=200, extra_environ={'REMOTE_USER': str(user['name'])})
+        response = app.get(
+            '/api/3/action/ckanext_showcase_list',
+            status=200, extra_environ={'REMOTE_USER': str(user['name'])})
 
         json_response = json.loads(response.body)
 
@@ -432,7 +436,8 @@ class TestShowcaseAuthEdit(ShowcaseFunctionalTestBase):
         factories.Dataset(name='my-showcase', type='showcase')
         factories.Dataset(name='my-dataset')
 
-        showcase_list_response = app.get('/dataset/showcases/my-dataset', status=200)
+        showcase_list_response = app.get('/dataset/showcases/my-dataset',
+                                         status=200)
 
         nosetools.assert_false('showcase-add' in showcase_list_response.forms)
 
@@ -447,8 +452,9 @@ class TestShowcaseAuthEdit(ShowcaseFunctionalTestBase):
         factories.Dataset(name='my-showcase', type='showcase')
         factories.Dataset(name='my-dataset')
 
-        showcase_list_response = app.get('/dataset/showcases/my-dataset', status=200,
-                                         extra_environ={'REMOTE_USER': str(user['name'])})
+        showcase_list_response = app.get(
+            '/dataset/showcases/my-dataset',
+            status=200, extra_environ={'REMOTE_USER': str(user['name'])})
 
         nosetools.assert_false('showcase-add' in showcase_list_response.forms)
 
@@ -463,8 +469,9 @@ class TestShowcaseAuthEdit(ShowcaseFunctionalTestBase):
         factories.Dataset(name='my-showcase', type='showcase')
         factories.Dataset(name='my-dataset')
 
-        showcase_list_response = app.get('/dataset/showcases/my-dataset', status=200,
-                                         extra_environ={'REMOTE_USER': str(user['name'])})
+        showcase_list_response = app.get(
+            '/dataset/showcases/my-dataset',
+            status=200, extra_environ={'REMOTE_USER': str(user['name'])})
 
         nosetools.assert_true('showcase-add' in showcase_list_response.forms)
 
@@ -483,8 +490,9 @@ class TestShowcaseAuthEdit(ShowcaseFunctionalTestBase):
         factories.Dataset(name='my-showcase', type='showcase')
         factories.Dataset(name='my-dataset')
 
-        showcase_list_response = app.get('/dataset/showcases/my-dataset', status=200,
-                                         extra_environ={'REMOTE_USER': str(user['name'])})
+        showcase_list_response = app.get(
+            '/dataset/showcases/my-dataset',
+            status=200, extra_environ={'REMOTE_USER': str(user['name'])})
 
         nosetools.assert_true('showcase-add' in showcase_list_response.forms)
 
@@ -629,7 +637,8 @@ class TestShowcaseAdminRemoveAuth(ShowcaseFunctionalTestBase):
 
         context = {'user': None, 'model': None}
         nosetools.assert_raises(toolkit.NotAuthorized, helpers.call_auth,
-                                'ckanext_showcase_admin_remove', context=context)
+                                'ckanext_showcase_admin_remove',
+                                context=context)
 
     def test_showcase_admin_remove_correct_creds(self):
         '''
@@ -648,7 +657,8 @@ class TestShowcaseAdminRemoveAuth(ShowcaseFunctionalTestBase):
         not_a_sysadmin = factories.User()
         context = {'user': not_a_sysadmin['name'], 'model': None}
         nosetools.assert_raises(toolkit.NotAuthorized, helpers.call_auth,
-                                'ckanext_showcase_admin_remove', context=context)
+                                'ckanext_showcase_admin_remove',
+                                context=context)
 
 
 class TestShowcaseAdminListAuth(ShowcaseFunctionalTestBase):

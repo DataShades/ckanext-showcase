@@ -30,7 +30,8 @@ class TestShowcaseShow(ShowcaseFunctionalTestBase):
         '''
         my_showcase = factories.Dataset(type='showcase', name='my-showcase')
 
-        showcase_shown = helpers.call_action('ckanext_showcase_show', id=my_showcase['id'])
+        showcase_shown = helpers.call_action(
+            'ckanext_showcase_show', id=my_showcase['id'])
 
         nosetools.assert_equal(my_showcase['name'], showcase_shown['name'])
 
@@ -40,7 +41,8 @@ class TestShowcaseShow(ShowcaseFunctionalTestBase):
         '''
         my_showcase = factories.Dataset(type='showcase', name='my-showcase')
 
-        showcase_shown = helpers.call_action('ckanext_showcase_show', id=my_showcase['name'])
+        showcase_shown = helpers.call_action(
+            'ckanext_showcase_show', id=my_showcase['name'])
 
         nosetools.assert_equal(my_showcase['id'], showcase_shown['id'])
 
@@ -59,7 +61,8 @@ class TestShowcaseShow(ShowcaseFunctionalTestBase):
         '''
         my_showcase = factories.Dataset(type='showcase', name='my-showcase')
 
-        showcase_shown = helpers.call_action('ckanext_showcase_show', id=my_showcase['name'])
+        showcase_shown = helpers.call_action(
+            'ckanext_showcase_show', id=my_showcase['name'])
 
         nosetools.assert_true('num_datasets' in showcase_shown)
         nosetools.assert_equal(showcase_shown['num_datasets'], 0)
@@ -84,7 +87,8 @@ class TestShowcaseShow(ShowcaseFunctionalTestBase):
                             context=context, package_id=package_two['id'],
                             showcase_id=my_showcase['id'])
 
-        showcase_shown = helpers.call_action('ckanext_showcase_show', id=my_showcase['name'])
+        showcase_shown = helpers.call_action(
+            'ckanext_showcase_show', id=my_showcase['name'])
 
         nosetools.assert_equal(showcase_shown['num_datasets'], 2)
 
@@ -113,9 +117,11 @@ class TestShowcaseShow(ShowcaseFunctionalTestBase):
                             showcase_id=my_showcase['id'])
 
         # delete the first package
-        helpers.call_action('package_delete', context=context, id=package_one['id'])
+        helpers.call_action('package_delete', context=context,
+                            id=package_one['id'])
 
-        showcase_shown = helpers.call_action('ckanext_showcase_show', id=my_showcase['name'])
+        showcase_shown = helpers.call_action('ckanext_showcase_show',
+                                             id=my_showcase['name'])
 
         # the num_datasets should only include active datasets
         nosetools.assert_equal(showcase_shown['num_datasets'], 2)
@@ -132,7 +138,9 @@ class TestShowcaseList(ShowcaseFunctionalTestBase):
 
         showcase_list = helpers.call_action('ckanext_showcase_list')
 
-        showcase_list_name_id = [(sc['name'], sc['id']) for sc in showcase_list]
+        showcase_list_name_id = [
+            (sc['name'], sc['id']) for sc in showcase_list
+        ]
 
         nosetools.assert_equal(len(showcase_list), 3)
         nosetools.assert_true(sorted(showcase_list_name_id) ==
@@ -155,9 +163,15 @@ class TestShowcaseList(ShowcaseFunctionalTestBase):
         showcase_list_name_id = [(sc['name'], sc['id']) for sc in showcase_list]
 
         nosetools.assert_equal(len(showcase_list), 1)
-        nosetools.assert_true((showcase_one['name'], showcase_one['id']) in showcase_list_name_id)
-        nosetools.assert_true((dataset_one['name'], dataset_one['id']) not in showcase_list_name_id)
-        nosetools.assert_true((dataset_two['name'], dataset_two['id']) not in showcase_list_name_id)
+        nosetools.assert_true(
+            (showcase_one['name'], showcase_one['id']) in showcase_list_name_id
+        )
+        nosetools.assert_true(
+            (dataset_one['name'], dataset_one['id']) not in showcase_list_name_id
+        )
+        nosetools.assert_true(
+            (dataset_two['name'], dataset_two['id']) not in showcase_list_name_id
+        )
 
 
 class TestShowcasePackageList(ShowcaseFunctionalTestBase):
@@ -274,7 +288,8 @@ class TestShowcasePackageList(ShowcaseFunctionalTestBase):
                             showcase_id=showcase_id)
 
         # delete the first package
-        helpers.call_action('package_delete', context=context, id=package_one['id'])
+        helpers.call_action('package_delete', context=context,
+                            id=package_one['id'])
 
         pkg_list = helpers.call_action('ckanext_showcase_package_list',
                                        showcase_id=showcase_id)
@@ -431,7 +446,8 @@ class TestShowcaseAdminList(ShowcaseFunctionalTestBase):
         admins returns an empty list.
         '''
 
-        showcase_admin_list = helpers.call_action('ckanext_showcase_admin_list')
+        showcase_admin_list = helpers.call_action(
+            'ckanext_showcase_admin_list')
 
         nosetools.assert_equal(showcase_admin_list, [])
 
@@ -451,11 +467,15 @@ class TestShowcaseAdminList(ShowcaseFunctionalTestBase):
         helpers.call_action('ckanext_showcase_admin_add', context={},
                             username=user_three['name'])
 
-        showcase_admin_list = helpers.call_action('ckanext_showcase_admin_list', context={})
+        showcase_admin_list = helpers.call_action(
+            'ckanext_showcase_admin_list', context={})
 
         nosetools.assert_equal(len(showcase_admin_list), 3)
         for user in [user_one, user_two, user_three]:
-            nosetools.assert_true({'name': user['name'], 'id': user['id']} in showcase_admin_list)
+            nosetools.assert_true(
+                {'name': user['name'],
+                 'id': user['id']} in showcase_admin_list
+            )
 
     def test_showcase_admin_only_lists_admin_users(self):
         '''
@@ -471,11 +491,15 @@ class TestShowcaseAdminList(ShowcaseFunctionalTestBase):
         helpers.call_action('ckanext_showcase_admin_add', context={},
                             username=user_two['name'])
 
-        showcase_admin_list = helpers.call_action('ckanext_showcase_admin_list', context={})
+        showcase_admin_list = helpers.call_action(
+            'ckanext_showcase_admin_list', context={})
 
         nosetools.assert_equal(len(showcase_admin_list), 2)
         # user three isn't in list
-        nosetools.assert_true({'name': user_three['name'], 'id': user_three['id']} not in showcase_admin_list)
+        nosetools.assert_true(
+            {'name': user_three['name'],
+             'id': user_three['id']} not in showcase_admin_list
+        )
 
 
 class TestPackageSearchBeforeSearch(ShowcaseFunctionalTestBase):
@@ -494,7 +518,8 @@ class TestPackageSearchBeforeSearch(ShowcaseFunctionalTestBase):
         factories.Dataset(type='showcase')
         factories.Dataset(type='custom')
 
-        search_results = helpers.call_action('package_search', context={})['results']
+        search_results = helpers.call_action('package_search', context={}
+                                             )['results']
 
         types = [result['type'] for result in search_results]
 
@@ -512,8 +537,9 @@ class TestPackageSearchBeforeSearch(ShowcaseFunctionalTestBase):
         factories.Dataset(type='showcase')
         factories.Dataset(type='custom')
 
-        search_results = helpers.call_action('package_search', context={},
-                                             fq='dataset_type:showcase')['results']
+        search_results = helpers.call_action(
+            'package_search', context={}, fq='dataset_type:showcase'
+        )['results']
 
         types = [result['type'] for result in search_results]
 
@@ -536,7 +562,8 @@ class TestUserShowBeforeSearch(ShowcaseFunctionalTestBase):
         showcases.
         '''
         if not toolkit.check_ckan_version(min_version='2.4'):
-            raise SkipTest('Filtering out showcases requires CKAN 2.4+ (ckan/ckan/issues/2380)')
+            raise SkipTest(
+                'Filtering out showcases requires CKAN 2.4+ (ckan/ckan/issues/2380)')
 
         user = factories.User()
         factories.Dataset(user=user)

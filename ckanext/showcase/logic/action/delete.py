@@ -99,7 +99,9 @@ def showcase_admin_remove(context, data_dict):
     showcase_admin_to_remove = ShowcaseAdmin.get(user_id=user_id)
 
     if showcase_admin_to_remove is None:
-        raise toolkit.ObjectNotFound("ShowcaseAdmin with user_id '{0}' doesn't exist.".format(user_id))
+        raise toolkit.ObjectNotFound(
+            "ShowcaseAdmin with user_id '{0}' doesn't exist.".format(user_id)
+        )
 
     showcase_admin_to_remove.delete()
     model.repo.commit()

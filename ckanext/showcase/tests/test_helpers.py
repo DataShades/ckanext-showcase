@@ -23,7 +23,8 @@ class TestGetSiteStatistics(ShowcaseFunctionalTestBase):
         Dataset and showcase count is 0 when no datasets, and no showcases.
         '''
         if not tk.check_ckan_version(min_version='2.5'):
-            raise SkipTest('get_site_statistics without user broken in CKAN 2.4')
+            raise SkipTest(
+                'get_site_statistics without user broken in CKAN 2.4')
         stats = showcase_helpers.get_site_statistics()
         nosetools.assert_equal(stats['dataset_count'], 0)
         nosetools.assert_equal(stats['showcase_count'], 0)
@@ -33,7 +34,8 @@ class TestGetSiteStatistics(ShowcaseFunctionalTestBase):
         Dataset and showcase count is 0 when no datasets, but some showcases.
         '''
         if not tk.check_ckan_version(min_version='2.5'):
-            raise SkipTest('get_site_statistics without user broken in CKAN 2.4')
+            raise SkipTest(
+                'get_site_statistics without user broken in CKAN 2.4')
         for i in xrange(0, 10):
             factories.Dataset(type='showcase')
 
@@ -47,7 +49,8 @@ class TestGetSiteStatistics(ShowcaseFunctionalTestBase):
         showcases.
         '''
         if not tk.check_ckan_version(min_version='2.5'):
-            raise SkipTest('get_site_statistics without user broken in CKAN 2.4')
+            raise SkipTest(
+                'get_site_statistics without user broken in CKAN 2.4')
         for i in xrange(0, 10):
             factories.Dataset()
 
@@ -61,7 +64,8 @@ class TestGetSiteStatistics(ShowcaseFunctionalTestBase):
         showcases.
         '''
         if not tk.check_ckan_version(min_version='2.5'):
-            raise SkipTest('get_site_statistics without user broken in CKAN 2.4')
+            raise SkipTest(
+                'get_site_statistics without user broken in CKAN 2.4')
         for i in xrange(0, 10):
             factories.Dataset()
 

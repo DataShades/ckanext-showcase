@@ -16,6 +16,7 @@ except ImportError:  # for ckan <= 2.3
 
 from ckanext.showcase.model import ShowcasePackageAssociation
 from ckanext.showcase.tests import ShowcaseFunctionalTestBase
+from ckanext.showcase import SC_CTRL_NAME
 
 import logging
 log = logging.getLogger(__name__)
@@ -38,7 +39,8 @@ class TestShowcaseIndex(ShowcaseFunctionalTestBase):
         factories.Dataset(type='showcase', name='my-showcase')
 
         response = app.get('/showcases/my-showcase', status=302)
-        nosetools.assert_equal(response.location, 'http://localhost/showcase/my-showcase')
+        nosetools.assert_equal(response.location,
+                               'http://localhost/showcase/my-showcase')
 
     def test_showcase_listed_on_index(self):
         '''
@@ -61,7 +63,7 @@ class TestShowcaseNewView(ShowcaseFunctionalTestBase):
 
         env = {'REMOTE_USER': sysadmin['name'].encode('ascii')}
         response = app.get(
-            url=url_for(controller='ckanext.showcase.controller:ShowcaseController', action='new'),
+            url=url_for(controller=SC_CTRL_NAME, action='new'),
             extra_environ=env,
         )
         nosetools.assert_true('dataset-edit' in response.forms)
@@ -75,7 +77,7 @@ class TestShowcaseNewView(ShowcaseFunctionalTestBase):
 
         env = {'REMOTE_USER': sysadmin['name'].encode('ascii')}
         response = app.get(
-            url=url_for(controller='ckanext.showcase.controller:ShowcaseController', action='new'),
+            url=url_for(controller=SC_CTRL_NAME, action='new'),
             extra_environ=env,
         )
 
@@ -87,8 +89,11 @@ class TestShowcaseNewView(ShowcaseFunctionalTestBase):
         # Unique to manage_datasets page
         nosetools.assert_true('bulk_action.showcase_add' in create_response)
         # Requested page is the manage_datasets url.
-        nosetools.assert_equal(url_for(controller='ckanext.showcase.controller:ShowcaseController',
-                                       action='manage_datasets', id='my-showcase'), create_response.request.path)
+        nosetools.assert_equal(
+            url_for(controller=SC_CTRL_NAME, action='manage_datasets',
+                    id='my-showcase'),
+            create_response.request.path
+        )
 
 
 class TestShowcaseEditView(ShowcaseFunctionalTestBase):
@@ -103,7 +108,7 @@ class TestShowcaseEditView(ShowcaseFunctionalTestBase):
 
         env = {'REMOTE_USER': sysadmin['name'].encode('ascii')}
         response = app.get(
-            url=url_for(controller='ckanext.showcase.controller:ShowcaseController',
+            url=url_for(controller=SC_CTRL_NAME,
                         action='edit',
                         id='my-showcase'),
             extra_environ=env,
@@ -118,7 +123,7 @@ class TestShowcaseEditView(ShowcaseFunctionalTestBase):
 
         env = {'REMOTE_USER': sysadmin['name'].encode('ascii')}
         response = app.get(
-            url=url_for(controller='ckanext.showcase.controller:ShowcaseController',
+            url=url_for(controller=SC_CTRL_NAME,
                         action='edit', id='my-showcase'),
             extra_environ=env,
         )
@@ -129,8 +134,11 @@ class TestShowcaseEditView(ShowcaseFunctionalTestBase):
         edit_response = submit_and_follow(app, form, env, 'save')
 
         # Requested page is the showcase read url.
-        nosetools.assert_equal(url_for(controller='ckanext.showcase.controller:ShowcaseController',
-                                       action='read', id='my-changed-showcase'), edit_response.request.path)
+        nosetools.assert_equal(
+            url_for(controller=SC_CTRL_NAME,
+                    action='read', id='my-changed-showcase'),
+            edit_response.request.path
+        )
 
 
 class TestDatasetView(ShowcaseFunctionalTestBase):
@@ -148,7 +156,8 @@ class TestDatasetView(ShowcaseFunctionalTestBase):
             url=url_for(controller='package', action='read', id=dataset['id'])
         )
         # response contains link to dataset's showcase list
-        nosetools.assert_true('/dataset/showcases/{0}'.format(dataset['name']) in response)
+        nosetools.assert_true(
+            '/dataset/showcases/{0}'.format(dataset['name']) in response)
 
     def test_dataset_showcase_page_lists_showcases_no_associations(self):
         '''
@@ -159,11 +168,12 @@ class TestDatasetView(ShowcaseFunctionalTestBase):
         dataset = factories.Dataset(name='my-dataset')
 
         response = app.get(
-            url=url_for(controller='ckanext.showcase.controller:ShowcaseController',
+            url=url_for(controller=SC_CTRL_NAME,
                         action='dataset_showcase_list', id=dataset['id'])
         )
 
-        nosetools.assert_equal(len(response.html.select('ul.media-grid li.media-item')), 0)
+        nosetools.assert_equal(
+            len(response.html.select('ul.media-grid li.media-item')), 0)
 
     def test_dataset_showcase_page_lists_showcases_two_associations(self):
         '''
@@ -173,8 +183,10 @@ class TestDatasetView(ShowcaseFunctionalTestBase):
         app = self._get_test_app()
         sysadmin = factories.Sysadmin()
         dataset = factories.Dataset(name='my-dataset')
-        showcase_one = factories.Dataset(name='my-first-showcase', type='showcase')
-        showcase_two = factories.Dataset(name='my-second-showcase', type='showcase')
+        showcase_one = factories.Dataset(name='my-first-showcase',
+                                         type='showcase')
+        showcase_two = factories.Dataset(name='my-second-showcase',
+                                         type='showcase')
         factories.Dataset(name='my-third-showcase', type='showcase')
 
         context = {'user': sysadmin['name']}
@@ -186,7 +198,7 @@ class TestDatasetView(ShowcaseFunctionalTestBase):
                             showcase_id=showcase_two['id'])
 
         response = app.get(
-            url=url_for(controller='ckanext.showcase.controller:ShowcaseController',
+            url=url_for(controller=SC_CTRL_NAME,
                         action='dataset_showcase_list', id=dataset['id'])
         )
 
@@ -203,9 +215,12 @@ class TestDatasetView(ShowcaseFunctionalTestBase):
         app = self._get_test_app()
         sysadmin = factories.Sysadmin()
         dataset = factories.Dataset(name='my-dataset')
-        showcase_one = factories.Dataset(name='my-first-showcase', type='showcase')
-        showcase_two = factories.Dataset(name='my-second-showcase', type='showcase')
-        showcase_three = factories.Dataset(name='my-third-showcase', type='showcase')
+        showcase_one = factories.Dataset(name='my-first-showcase',
+                                         type='showcase')
+        showcase_two = factories.Dataset(name='my-second-showcase',
+                                         type='showcase')
+        showcase_three = factories.Dataset(name='my-third-showcase',
+                                           type='showcase')
 
         context = {'user': sysadmin['name']}
         helpers.call_action('ckanext_showcase_package_association_create',
@@ -213,13 +228,15 @@ class TestDatasetView(ShowcaseFunctionalTestBase):
                             showcase_id=showcase_one['id'])
 
         response = app.get(
-            url=url_for(controller='ckanext.showcase.controller:ShowcaseController',
+            url=url_for(controller=SC_CTRL_NAME,
                         action='dataset_showcase_list', id=dataset['id']),
             extra_environ={'REMOTE_USER': str(sysadmin['name'])}
         )
 
         showcase_add_form = response.forms['showcase-add']
-        showcase_added_options = [value for (value, _) in showcase_add_form['showcase_added'].options]
+        showcase_added_options = [
+            value for (value, _) in showcase_add_form['showcase_added'].options
+        ]
         nosetools.assert_true(showcase_one['id'] not in showcase_added_options)
         nosetools.assert_true(showcase_two['id'] in showcase_added_options)
         nosetools.assert_true(showcase_three['id'] in showcase_added_options)
@@ -232,16 +249,18 @@ class TestDatasetView(ShowcaseFunctionalTestBase):
         app = self._get_test_app()
         sysadmin = factories.Sysadmin()
         dataset = factories.Dataset(name='my-dataset')
-        showcase_one = factories.Dataset(name='my-first-showcase', type='showcase')
+        showcase_one = factories.Dataset(name='my-first-showcase',
+                                         type='showcase')
         factories.Dataset(name='my-second-showcase', type='showcase')
         factories.Dataset(name='my-third-showcase', type='showcase')
 
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 0)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 0)
 
         env = {'REMOTE_USER': sysadmin['name'].encode('ascii')}
 
         response = app.get(
-            url=url_for(controller='ckanext.showcase.controller:ShowcaseController',
+            url=url_for(controller=SC_CTRL_NAME,
                         action='dataset_showcase_list', id=dataset['id']),
             extra_environ=env
         )
@@ -251,9 +270,11 @@ class TestDatasetView(ShowcaseFunctionalTestBase):
         showcase_add_response = submit_and_follow(app, form, env)
 
         # returns to the correct page
-        nosetools.assert_equal(showcase_add_response.request.path, "/dataset/showcases/my-dataset")
+        nosetools.assert_equal(showcase_add_response.request.path,
+                               "/dataset/showcases/my-dataset")
         # an association is created
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 1)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 1)
 
     def test_dataset_showcase_page_remove_showcase_button_submit(self):
         '''
@@ -263,31 +284,36 @@ class TestDatasetView(ShowcaseFunctionalTestBase):
         app = self._get_test_app()
         sysadmin = factories.Sysadmin()
         dataset = factories.Dataset(name='my-dataset')
-        showcase_one = factories.Dataset(name='my-first-showcase', type='showcase')
+        showcase_one = factories.Dataset(name='my-first-showcase',
+                                         type='showcase')
 
         context = {'user': sysadmin['name']}
         helpers.call_action('ckanext_showcase_package_association_create',
                             context=context, package_id=dataset['id'],
                             showcase_id=showcase_one['id'])
 
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 1)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 1)
 
         env = {'REMOTE_USER': sysadmin['name'].encode('ascii')}
         response = app.get(
-            url=url_for(controller='ckanext.showcase.controller:ShowcaseController',
+            url=url_for(controller=SC_CTRL_NAME,
                         action='dataset_showcase_list', id=dataset['id']),
             extra_environ=env
         )
 
         # Submit the remove form.
         form = response.forms[1]
-        nosetools.assert_equal(form['remove_showcase_id'].value, showcase_one['id'])
+        nosetools.assert_equal(
+            form['remove_showcase_id'].value, showcase_one['id'])
         showcase_remove_response = submit_and_follow(app, form, env)
 
         # returns to the correct page
-        nosetools.assert_equal(showcase_remove_response.request.path, "/dataset/showcases/my-dataset")
+        nosetools.assert_equal(showcase_remove_response.request.path,
+                               "/dataset/showcases/my-dataset")
         # the association is deleted
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 0)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 0)
 
 
 class TestShowcaseAdminManageView(ShowcaseFunctionalTestBase):
@@ -320,7 +346,7 @@ class TestShowcaseAdminManageView(ShowcaseFunctionalTestBase):
         sysadmin = factories.Sysadmin()
 
         env = {'REMOTE_USER': sysadmin['name'].encode('ascii')}
-        app.get(url=url_for(controller='ckanext.showcase.controller:ShowcaseController',
+        app.get(url=url_for(controller=SC_CTRL_NAME,
                             action='manage_showcase_admins'),
                 status=200, extra_environ=env)
 
@@ -341,13 +367,14 @@ class TestShowcaseAdminManageView(ShowcaseFunctionalTestBase):
         sysadmin = factories.Sysadmin()
 
         env = {'REMOTE_USER': sysadmin['name'].encode('ascii')}
-        response = app.get(url=url_for(controller='ckanext.showcase.controller:ShowcaseController',
+        response = app.get(url=url_for(controller=SC_CTRL_NAME,
                                        action='manage_showcase_admins'),
                            status=200, extra_environ=env)
 
         nosetools.assert_true('/user/{0}'.format(user_one['name']) in response)
         nosetools.assert_true('/user/{0}'.format(user_two['name']) in response)
-        nosetools.assert_true('/user/{0}'.format(user_three['name']) not in response)
+        nosetools.assert_true(
+            '/user/{0}'.format(user_three['name']) not in response)
 
     def test_showcase_admin_manage_page_no_admins_message(self):
         '''
@@ -358,11 +385,12 @@ class TestShowcaseAdminManageView(ShowcaseFunctionalTestBase):
         sysadmin = factories.Sysadmin()
 
         env = {'REMOTE_USER': sysadmin['name'].encode('ascii')}
-        response = app.get(url=url_for(controller='ckanext.showcase.controller:ShowcaseController',
+        response = app.get(url=url_for(controller=SC_CTRL_NAME,
                                        action='manage_showcase_admins'),
                            status=200, extra_environ=env)
 
-        nosetools.assert_true('There are currently no Showcase Admins' in response)
+        nosetools.assert_true(
+            'There are currently no Showcase Admins' in response)
 
 
 class TestSearch(helpers.FunctionalTestBase):
@@ -378,4 +406,3 @@ class TestSearch(helpers.FunctionalTestBase):
         dataset = factories.Dataset(tags=[{'name': tag, 'state': 'active'}])
         result = helpers.call_action('package_search', fq='tags:' + tag)
         nosetools.assert_equals(result['count'], 1)
-

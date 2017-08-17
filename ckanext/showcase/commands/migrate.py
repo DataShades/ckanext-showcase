@@ -25,14 +25,17 @@ class MigrationCommand(CkanCommand):
     summary = __doc__.split('\n')[0]
     usage = __doc__
 
-    def __init__(self,name):
+    def __init__(self, name):
         super(CkanCommand, self).__init__(name)
 
-        self.parser.add_option('--allow-duplicates', dest='allow_duplicates',
-                            default=False, help='''Use this option to allow
-                            related items with duplicate titles to be migrated.
-                            Duplicate showcases will be created as
-                            'duplicate_<related-name>_<related-id>'.''', action='store_true')
+        self.parser.add_option(
+            '--allow-duplicates', dest='allow_duplicates',
+            default=False,
+            help='''Use this option to allow
+                    related items with duplicate titles to be migrated.
+                    Duplicate showcases will be created as
+                    'duplicate_<related-name>_<related-id>'.''',
+            action='store_true')
 
     def command(self):
         '''
@@ -78,13 +81,16 @@ migration can continue. Please correct and try again:"""
 
         for related in related_items:
             existing_showcase = get_action('package_search')(
-                data_dict={'fq': '+dataset_type:showcase original_related_item_id:{0}'.format(related['id'])})
+                data_dict={
+                    'fq': '+dataset_type:showcase original_related_item_id:{0}'.format(related['id'])
+                })
             normalized_title = substitute_ascii_equivalents(related['title'])
             if existing_showcase['count'] > 0:
                 print('Showcase for Related Item "{0}" already exists.'.format(
                     normalized_title))
             else:
-                showcase_title = self._gen_new_title(related.get('title'), related['id'])
+                showcase_title = self._gen_new_title(related.get('title'),
+                                                     related['id'])
                 data_dict = {
                     'original_related_item_id': related.get('id'),
                     'title': showcase_title,
@@ -102,14 +108,17 @@ migration can continue. Please correct and try again:"""
                     print('There was a problem migrating "{0}": {1}'.format(
                         normalized_title, e))
                 else:
-                    print('Created Showcase from the Related Item "{0}"'.format(normalized_title))
+                    print(
+                        'Created Showcase from the Related Item "{0}"'.format(
+                            normalized_title))
 
                     # make the showcase_package_association, if needed
                     try:
                         related_pkg_id = self._get_related_dataset(
                             related['id'])
                         if related_pkg_id:
-                            get_action('ckanext_showcase_package_association_create')(
+                            get_action(
+                                'ckanext_showcase_package_association_create')(
                                 data_dict={'showcase_id': new_showcase['id'],
                                            'package_id': related_pkg_id})
                     except Exception as e:
@@ -139,7 +148,8 @@ migration can continue. Please correct and try again:"""
 
     def _gen_new_title(self, title, related_id):
         name = munge_title_to_name(title)
-        pkg_obj = model.Session.query(model.Package).filter_by(name=name).first()
+        pkg_obj = model.Session.query(model.Package).filter_by(name=name)\
+                                                    .first()
         if pkg_obj:
             title.replace('duplicate_', '')
             return 'duplicate_' + title + '_' + related_id

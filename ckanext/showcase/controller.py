@@ -14,8 +14,9 @@ from ckan.controllers.package import (PackageController,
                                       url_with_params,
                                       _encode_params)
 
-from ckanext.showcase.model import ShowcasePackageAssociation
+from ckanext.showcase.model import ShowcasePackageAssociation as SPA
 from ckanext.showcase.plugin import DATASET_TYPE_NAME
+from ckanext.showcase import SC_CTRL_NAME
 
 _ = tk._
 c = tk.c
@@ -101,7 +102,7 @@ class ShowcaseController(PackageController):
 
         # redirect to manage datasets
         url = h.url_for(
-            controller='ckanext.showcase.controller:ShowcaseController',
+            controller=SC_CTRL_NAME,
             action='manage_datasets', id=pkg_dict['name'])
         redirect(url)
 
@@ -125,7 +126,7 @@ class ShowcaseController(PackageController):
 
         # redirect to showcase details page
         url = h.url_for(
-            controller='ckanext.showcase.controller:ShowcaseController',
+            controller=SC_CTRL_NAME,
             action='read', id=pkg['name'])
         redirect(url)
 
@@ -158,7 +159,7 @@ class ShowcaseController(PackageController):
     def delete(self, id):
         if 'cancel' in request.params:
             tk.redirect_to(
-                controller='ckanext.showcase.controller:ShowcaseController',
+                controller=SC_CTRL_NAME,
                 action='edit', id=id)
 
         context = {'model': model, 'session': model.Session,
@@ -174,7 +175,7 @@ class ShowcaseController(PackageController):
                 get_action('ckanext_showcase_delete')(context, {'id': id})
                 h.flash_notice(_('Showcase has been deleted.'))
                 tk.redirect_to(
-                    controller='ckanext.showcase.controller:ShowcaseController',
+                    controller=SC_CTRL_NAME,
                     action='search')
             c.pkg_dict = get_action('package_show')(context, {'id': id})
         except NotAuthorized:
@@ -239,7 +240,7 @@ class ShowcaseController(PackageController):
                     h.flash_success(
                         _("The dataset has been removed from the showcase."))
             redirect(h.url_for(
-                controller='ckanext.showcase.controller:ShowcaseController',
+                controller=SC_CTRL_NAME,
                 action='dataset_showcase_list', id=c.pkg_dict['name']))
 
         pkg_showcase_ids = [showcase['id'] for showcase in c.showcase_list]
@@ -295,7 +296,7 @@ class ShowcaseController(PackageController):
                         "The datasets have been removed from the showcase.",
                         len(dataset_ids)))
                 url = h.url_for(
-                    controller='ckanext.showcase.controller:ShowcaseController',
+                    controller=SC_CTRL_NAME,
                     action='manage_datasets', id=id)
                 redirect(url)
 
@@ -327,7 +328,7 @@ class ShowcaseController(PackageController):
                             "The datasets have been added to the showcase.",
                             len(successful_adds)))
                 url = h.url_for(
-                    controller='ckanext.showcase.controller:ShowcaseController',
+                    controller=SC_CTRL_NAME,
                     action='manage_datasets', id=id)
                 redirect(url)
 
@@ -341,7 +342,7 @@ class ShowcaseController(PackageController):
 
     def _search_url(self, params, name):
         url = h.url_for(
-            controller='ckanext.showcase.controller:ShowcaseController',
+            controller=SC_CTRL_NAME,
             action='manage_datasets', id=name)
         return url_with_params(url, params)
 
@@ -452,7 +453,8 @@ class ShowcaseController(PackageController):
 
             # Only search for packages that aren't already associated with the
             # Showcase
-            associated_package_ids = ShowcasePackageAssociation.get_package_ids_for_showcase(showcase_id)
+            associated_package_ids = SPA.get_package_ids_for_showcase(
+                                                                showcase_id)
             # flatten resulting list to space separated string
             if associated_package_ids:
                 associated_package_ids_str = \
@@ -516,7 +518,8 @@ class ShowcaseController(PackageController):
                 limit = int(request.params.get('_%s_limit' % facet,
                                                g.facets_default_number))
             except ValueError:
-                abort(400, _("Parameter '{parameter_name}' is not an integer").format(
+                abort(400, _(
+                    "Parameter '{parameter_name}' is not an integer").format(
                                  parameter_name='_%s_limit' % facet
                              ))
             c.search_facets_limits[facet] = limit
@@ -550,7 +553,7 @@ class ShowcaseController(PackageController):
                 h.flash_success(_("The user is now a Showcase Admin"))
 
             return redirect(h.url_for(
-                controller='ckanext.showcase.controller:ShowcaseController',
+                controller=SC_CTRL_NAME,
                 action='manage_showcase_admins'))
 
         c.showcase_admins = get_action('ckanext_showcase_admin_list')()
@@ -571,7 +574,7 @@ class ShowcaseController(PackageController):
 
         if 'cancel' in request.params:
             tk.redirect_to(
-                controller='ckanext.showcase.controller:ShowcaseController',
+                controller=SC_CTRL_NAME,
                 action='manage_showcase_admins')
 
         user_id = request.params['user']
@@ -588,7 +591,7 @@ class ShowcaseController(PackageController):
                 h.flash_success(_('The user is no longer a Showcase Admin'))
 
             return redirect(h.url_for(
-                controller='ckanext.showcase.controller:ShowcaseController',
+                controller=SC_CTRL_NAME,
                 action='manage_showcase_admins'))
 
         c.user_dict = get_action('user_show')(data_dict={'id': user_id})

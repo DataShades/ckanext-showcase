@@ -12,7 +12,9 @@ try:
 except ImportError:  # for ckan <= 2.3
     import ckan.new_tests.helpers as helpers
 
-from ckanext.showcase.logic.converters import convert_package_name_or_id_to_title_or_name
+from ckanext.showcase.logic.converters import (
+    convert_package_name_or_id_to_title_or_name
+)
 from ckanext.showcase.tests import ShowcaseFunctionalTestBase
 
 
@@ -25,7 +27,8 @@ class TestNameOrIdToTitleConverter(ShowcaseFunctionalTestBase):
         context = {'session': model.Session}
         factories.Dataset(id='my-id', title='My Title', name='my-name')
 
-        result = convert_package_name_or_id_to_title_or_name('my-name', context)
+        result = convert_package_name_or_id_to_title_or_name('my-name',
+                                                             context)
         nosetools.assert_equals('My Title', result)
 
     def test_name_to_name(self):
@@ -35,7 +38,8 @@ class TestNameOrIdToTitleConverter(ShowcaseFunctionalTestBase):
         context = {'session': model.Session}
         factories.Dataset(id='my-id', title='', name='my-name')
 
-        result = convert_package_name_or_id_to_title_or_name('my-name', context)
+        result = convert_package_name_or_id_to_title_or_name('my-name',
+                                                             context)
         nosetools.assert_equals('my-name', result)
 
     def test_id_to_title(self):
@@ -64,6 +68,7 @@ class TestNameOrIdToTitleConverter(ShowcaseFunctionalTestBase):
         '''
         context = {'session': model.Session}
 
-        nosetools.assert_raises(toolkit.Invalid, convert_package_name_or_id_to_title_or_name,
-                                'my-non-existent-id',
-                                context=context)
+        nosetools.assert_raises(
+            toolkit.Invalid,
+            convert_package_name_or_id_to_title_or_name,
+            'my-non-existent-id', context=context)

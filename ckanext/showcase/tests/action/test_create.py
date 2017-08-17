@@ -92,7 +92,8 @@ class TestCreateShowcasePackageAssociation(ShowcaseFunctionalTestBase):
                                 'ckanext_showcase_package_association_create',
                                 context=context)
 
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 0)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 0)
 
     def test_association_create_missing_arg(self):
         '''
@@ -107,7 +108,8 @@ class TestCreateShowcasePackageAssociation(ShowcaseFunctionalTestBase):
                                 'ckanext_showcase_package_association_create',
                                 context=context, package_id=package_id)
 
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 0)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 0)
 
     def test_association_create_by_id(self):
         '''
@@ -119,14 +121,16 @@ class TestCreateShowcasePackageAssociation(ShowcaseFunctionalTestBase):
         showcase_id = factories.Dataset(type='showcase')['id']
 
         context = {'user': sysadmin['name']}
-        association_dict = helpers.call_action('ckanext_showcase_package_association_create',
-                                               context=context, package_id=package_id,
-                                               showcase_id=showcase_id)
+        association_dict = helpers.call_action(
+            'ckanext_showcase_package_association_create',
+            context=context, package_id=package_id, showcase_id=showcase_id)
 
         # One association object created
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 1)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 1)
         # Association properties are correct
-        nosetools.assert_equal(association_dict.get('showcase_id'), showcase_id)
+        nosetools.assert_equal(association_dict.get('showcase_id'),
+                               showcase_id)
         nosetools.assert_equal(association_dict.get('package_id'), package_id)
 
     def test_association_create_by_name(self):
@@ -141,13 +145,17 @@ class TestCreateShowcasePackageAssociation(ShowcaseFunctionalTestBase):
         showcase_name = showcase['name']
 
         context = {'user': sysadmin['name']}
-        association_dict = helpers.call_action('ckanext_showcase_package_association_create',
-                                               context=context, package_id=package_name,
-                                               showcase_id=showcase_name)
+        association_dict = helpers.call_action(
+            'ckanext_showcase_package_association_create',
+            context=context, package_id=package_name,
+            showcase_id=showcase_name)
 
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 1)
-        nosetools.assert_equal(association_dict.get('showcase_id'), showcase['id'])
-        nosetools.assert_equal(association_dict.get('package_id'), package['id'])
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 1)
+        nosetools.assert_equal(
+            association_dict.get('showcase_id'), showcase['id'])
+        nosetools.assert_equal(
+            association_dict.get('package_id'), package['id'])
 
     def test_association_create_existing(self):
         '''
@@ -184,7 +192,8 @@ class TestCreateShowcaseAdmin(ShowcaseFunctionalTestBase):
                             username=user_to_add['name'])
 
         nosetools.assert_equal(model.Session.query(ShowcaseAdmin).count(), 1)
-        nosetools.assert_true(user_to_add['id'] in ShowcaseAdmin.get_showcase_admin_ids())
+        nosetools.assert_true(
+            user_to_add['id'] in ShowcaseAdmin.get_showcase_admin_ids())
 
     def test_showcase_admin_add_multiple_users(self):
         '''
@@ -203,8 +212,10 @@ class TestCreateShowcaseAdmin(ShowcaseFunctionalTestBase):
                             username=second_user_to_add['name'])
 
         nosetools.assert_equal(model.Session.query(ShowcaseAdmin).count(), 2)
-        nosetools.assert_true(user_to_add['id'] in ShowcaseAdmin.get_showcase_admin_ids())
-        nosetools.assert_true(second_user_to_add['id'] in ShowcaseAdmin.get_showcase_admin_ids())
+        nosetools.assert_true(
+            user_to_add['id'] in ShowcaseAdmin.get_showcase_admin_ids())
+        nosetools.assert_true(
+            second_user_to_add['id'] in ShowcaseAdmin.get_showcase_admin_ids())
 
     def test_showcase_admin_add_existing_user(self):
         '''

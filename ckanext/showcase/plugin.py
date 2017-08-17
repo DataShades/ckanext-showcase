@@ -11,14 +11,15 @@ from ckan import model as ckan_model
 
 from routes.mapper import SubMapper
 
-import ckanext.showcase.logic.auth
-import ckanext.showcase.logic.action.create
-import ckanext.showcase.logic.action.delete
-import ckanext.showcase.logic.action.update
-import ckanext.showcase.logic.action.get
+import ckanext.showcase.logic.auth as logic_auth
+import ckanext.showcase.logic.action.create as action_create
+import ckanext.showcase.logic.action.delete as action_delete
+import ckanext.showcase.logic.action.update as action_update
+import ckanext.showcase.logic.action.get as action_get
 import ckanext.showcase.logic.schema as showcase_schema
 import ckanext.showcase.logic.helpers as showcase_helpers
 from ckanext.showcase.model import setup as model_setup
+from ckanext.showcase import SC_CTRL_NAME
 
 c = tk.c
 _ = tk._
@@ -111,25 +112,25 @@ class ShowcasePlugin(plugins.SingletonPlugin, lib_plugins.DefaultDatasetForm):
 
     def get_auth_functions(self):
         return {
-            'ckanext_showcase_create': ckanext.showcase.logic.auth.create,
-            'ckanext_showcase_update': ckanext.showcase.logic.auth.update,
-            'ckanext_showcase_delete': ckanext.showcase.logic.auth.delete,
-            'ckanext_showcase_show': ckanext.showcase.logic.auth.show,
-            'ckanext_showcase_list': ckanext.showcase.logic.auth.list,
+            'ckanext_showcase_create': logic_auth.create,
+            'ckanext_showcase_update': logic_auth.update,
+            'ckanext_showcase_delete': logic_auth.delete,
+            'ckanext_showcase_show': logic_auth.show,
+            'ckanext_showcase_list': logic_auth.list,
             'ckanext_showcase_package_association_create':
-                ckanext.showcase.logic.auth.package_association_create,
+                logic_auth.package_association_create,
             'ckanext_showcase_package_association_delete':
-                ckanext.showcase.logic.auth.package_association_delete,
+                logic_auth.package_association_delete,
             'ckanext_showcase_package_list':
-                ckanext.showcase.logic.auth.showcase_package_list,
+                logic_auth.showcase_package_list,
             'ckanext_package_showcase_list':
-                ckanext.showcase.logic.auth.package_showcase_list,
+                logic_auth.package_showcase_list,
             'ckanext_showcase_admin_add':
-                ckanext.showcase.logic.auth.add_showcase_admin,
+                logic_auth.add_showcase_admin,
             'ckanext_showcase_admin_remove':
-                ckanext.showcase.logic.auth.remove_showcase_admin,
+                logic_auth.remove_showcase_admin,
             'ckanext_showcase_admin_list':
-                ckanext.showcase.logic.auth.showcase_admin_list
+                logic_auth.showcase_admin_list
         }
 
     # IRoutes
@@ -138,7 +139,7 @@ class ShowcasePlugin(plugins.SingletonPlugin, lib_plugins.DefaultDatasetForm):
         # These named routes are used for custom dataset forms which will use
         # the names below based on the dataset.type ('dataset' is the default
         # type)
-        with SubMapper(map, controller='ckanext.showcase.controller:ShowcaseController') as m:
+        with SubMapper(map, controller=SC_CTRL_NAME) as m:
             m.connect('ckanext_showcase_index', '/showcase', action='search',
                       highlight_actions='index search')
             m.connect('ckanext_showcase_new', '/showcase/new', action='new')
@@ -167,29 +168,29 @@ class ShowcasePlugin(plugins.SingletonPlugin, lib_plugins.DefaultDatasetForm):
     def get_actions(self):
         action_functions = {
             'ckanext_showcase_create':
-                ckanext.showcase.logic.action.create.showcase_create,
+                action_create.showcase_create,
             'ckanext_showcase_update':
-                ckanext.showcase.logic.action.update.showcase_update,
+                action_update.showcase_update,
             'ckanext_showcase_delete':
-                ckanext.showcase.logic.action.delete.showcase_delete,
+                action_delete.showcase_delete,
             'ckanext_showcase_show':
-                ckanext.showcase.logic.action.get.showcase_show,
+                action_get.showcase_show,
             'ckanext_showcase_list':
-                ckanext.showcase.logic.action.get.showcase_list,
+                action_get.showcase_list,
             'ckanext_showcase_package_association_create':
-                ckanext.showcase.logic.action.create.showcase_package_association_create,
+                action_create.showcase_package_association_create,
             'ckanext_showcase_package_association_delete':
-                ckanext.showcase.logic.action.delete.showcase_package_association_delete,
+                action_delete.showcase_package_association_delete,
             'ckanext_showcase_package_list':
-                ckanext.showcase.logic.action.get.showcase_package_list,
+                action_get.showcase_package_list,
             'ckanext_package_showcase_list':
-                ckanext.showcase.logic.action.get.package_showcase_list,
+                action_get.package_showcase_list,
             'ckanext_showcase_admin_add':
-                ckanext.showcase.logic.action.create.showcase_admin_add,
+                action_create.showcase_admin_add,
             'ckanext_showcase_admin_remove':
-                ckanext.showcase.logic.action.delete.showcase_admin_remove,
+                action_delete.showcase_admin_remove,
             'ckanext_showcase_admin_list':
-                ckanext.showcase.logic.action.get.showcase_admin_list,
+                action_get.showcase_admin_list,
         }
         return action_functions
 

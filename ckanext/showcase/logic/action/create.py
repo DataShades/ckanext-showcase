@@ -68,8 +68,10 @@ def showcase_package_association_create(context, data_dict):
 
     if ShowcasePackageAssociation.exists(package_id=package_id,
                                          showcase_id=showcase_id):
-        raise toolkit.ValidationError("ShowcasePackageAssociation with package_id '{0}' and showcase_id '{1}' already exists.".format(package_id, showcase_id),
-                                      error_summary=u"The dataset, {0}, is already in the showcase".format(convert_package_name_or_id_to_title_or_name(package_id, context)))
+        raise toolkit.ValidationError(
+            "ShowcasePackageAssociation with package_id '{0}' and showcase_id '{1}' already exists.".format(package_id, showcase_id),
+            error_summary=u"The dataset, {0}, is already in the showcase".format(convert_package_name_or_id_to_title_or_name(package_id, context))
+        )
 
     # create the association
     return ShowcasePackageAssociation.create(package_id=package_id,
@@ -99,8 +101,11 @@ def showcase_admin_add(context, data_dict):
         raise toolkit.ValidationError(errors)
 
     if ShowcaseAdmin.exists(user_id=user_id):
-        raise toolkit.ValidationError("ShowcaseAdmin with user_id '{0}' already exists.".format(user_id),
-                                      error_summary=u"User '{0}' is already a Showcase Admin.".format(username))
+        raise toolkit.ValidationError(
+            "ShowcaseAdmin with user_id '{0}' already exists.".format(user_id),
+            error_summary=u"User '{0}' is already a Showcase Admin.".format(
+                username)
+        )
 
     # create showcase admin entry
     return ShowcaseAdmin.create(user_id=user_id)

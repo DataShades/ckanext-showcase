@@ -93,12 +93,14 @@ class TestDeleteShowcase(ShowcaseFunctionalTestBase):
                             context=context, package_id=dataset_two['id'],
                             showcase_id=showcase['id'])
 
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 2)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 2)
 
         helpers.call_action('ckanext_showcase_delete',
                             context=context, id=showcase['id'])
 
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 0)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 0)
 
 
 class TestDeletePackage(ShowcaseFunctionalTestBase):
@@ -121,14 +123,16 @@ class TestDeletePackage(ShowcaseFunctionalTestBase):
                             context=context, package_id=dataset_two['id'],
                             showcase_id=showcase['id'])
 
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 2)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 2)
 
         # delete the first package, should also delete the
         # ShowcasePackageAssociation associated with it.
         helpers.call_action('package_delete',
                             context=context, id=dataset_one['id'])
 
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 2)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 2)
 
     def test_package_purge_deletes_associations(self):
         '''
@@ -148,7 +152,8 @@ class TestDeletePackage(ShowcaseFunctionalTestBase):
                             context=context, package_id=dataset_two['id'],
                             showcase_id=showcase['id'])
 
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 2)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 2)
 
         # purge the first package, should also delete the
         # ShowcasePackageAssociation associated with it.
@@ -156,7 +161,8 @@ class TestDeletePackage(ShowcaseFunctionalTestBase):
         pkg.purge()
         model.repo.commit_and_remove()
 
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 1)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 1)
 
 
 class TestDeleteShowcasePackageAssociation(ShowcaseFunctionalTestBase):
@@ -199,7 +205,8 @@ class TestDeleteShowcasePackageAssociation(ShowcaseFunctionalTestBase):
                             showcase_id=showcase_id)
 
         # One association object created
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 1)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 1)
 
         helpers.call_action('ckanext_showcase_package_association_delete',
                             context=context, package_id=package_id,
@@ -215,7 +222,8 @@ class TestDeleteShowcasePackageAssociation(ShowcaseFunctionalTestBase):
         showcase_id = factories.Dataset(type='showcase')['id']
 
         # No existing associations
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 0)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 0)
 
         context = {'user': sysadmin['name']}
         nosetools.assert_raises(toolkit.ObjectNotFound, helpers.call_action,
@@ -231,13 +239,15 @@ class TestDeleteShowcasePackageAssociation(ShowcaseFunctionalTestBase):
         sysadmin = factories.User(sysadmin=True)
 
         # No existing associations
-        nosetools.assert_equal(model.Session.query(ShowcasePackageAssociation).count(), 0)
+        nosetools.assert_equal(
+            model.Session.query(ShowcasePackageAssociation).count(), 0)
 
         context = {'user': sysadmin['name']}
-        nosetools.assert_raises(toolkit.ValidationError, helpers.call_action,
-                                'ckanext_showcase_package_association_delete',
-                                context=context, package_id="my-bad-package-id",
-                                showcase_id="my-bad-showcase-id")
+        nosetools.assert_raises(
+            toolkit.ValidationError, helpers.call_action,
+            'ckanext_showcase_package_association_delete',
+            context=context, package_id="my-bad-package-id",
+            showcase_id="my-bad-showcase-id")
 
     def test_association_delete_retains_packages(self):
         '''
@@ -297,7 +307,8 @@ class TestRemoveShowcaseAdmin(ShowcaseFunctionalTestBase):
 
         # There's a ShowcaseAdmin object
         nosetools.assert_equal(model.Session.query(ShowcaseAdmin).count(), 1)
-        nosetools.assert_true(user['id'] in ShowcaseAdmin.get_showcase_admin_ids())
+        nosetools.assert_true(
+            user['id'] in ShowcaseAdmin.get_showcase_admin_ids())
 
         # purge the user, should also delete the ShowcaseAdmin object
         # associated with it.
