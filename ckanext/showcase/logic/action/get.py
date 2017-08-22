@@ -70,8 +70,7 @@ def showcase_package_list(context, data_dict):
     # get a list of package ids associated with showcase id
     pkg_id_list = ShowcasePackageAssociation.get_package_ids_for_showcase(
         validated_data_dict['showcase_id'])
-
-    if pkg_id_list is not None:
+    if pkg_id_list:
         # for each package id, get the package dict and append to list if
         # active
         pkg_id_list = [pkg[0] for pkg in pkg_id_list]

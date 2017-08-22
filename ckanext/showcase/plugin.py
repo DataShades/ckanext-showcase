@@ -228,12 +228,14 @@ class ShowcasePlugin(plugins.SingletonPlugin, lib_plugins.DefaultDatasetForm):
 
         pkg_id_list = ShowcasePackageAssociation.get_package_ids_for_showcase(
             validated_data_dict['showcase_id'])
-        pkg_id_list = [pkg[0] for pkg in pkg_id_list]
-        q = 'id:({0})'.format(' OR '.join(pkg_id_list))
-        query = tk.get_action('package_search')(
-                context, {'q': q})
+        query = None
+        if pkg_id_list:
+            pkg_id_list = [pkg[0] for pkg in pkg_id_list]
+            q = 'id:({0})'.format(' OR '.join(pkg_id_list))
+            query = tk.get_action('package_search')(
+                    context, {'q': q})
 
-        pkg_dict[u'num_datasets'] = query['count']
+        pkg_dict[u'num_datasets'] = query['count'] if query else 0
 
         # Rendered notes
         pkg_dict[u'showcase_notes_formatted'] = \
