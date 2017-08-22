@@ -86,6 +86,25 @@
   {% endblock %}
 
   {% block package_search_results_list %}
+  <section class="module module-narrow">
+    {% if c.showcase_pkgs %}
+      <h3 class="module-heading"><i class="icon-medium icon-sitemap"></i> {{ _('Datasets in Showcase') }}</h3>
+      <ul class="nav nav-simple">
+      {% for package in c.showcase_pkgs %}
+        {% set truncate_title = truncate_title or 80 %}
+        {% set title = package.title or package.name %}
+        <li class="nav-item">{{ h.link_to(h.truncate(title, truncate_title), h.url_for(controller='package', action='read', id=package.name)) }}</li>
+      {% endfor %}
+      </ul>
+      {% if c.page.pager() %}
+          <div>
+            <div class="ckanext_showcase_pagination_footer">{{ c.page.pager() }}</div>
+          </div>
+      {% endif %}
+    {% else %}
+      <p class="module-content empty">{{_('There are no Datasets in this Showcase')}}</p>
+    {% endif %}
+  </section>
   {% endblock %}
 
 {% endblock %}
@@ -94,7 +113,7 @@
   {% block secondary_help_content %}{% endblock %}
 
   {% block package_info %}
-    {% snippet 'showcase/snippets/showcase_info.html', pkg=pkg, showcase_pkgs=c.showcase_pkgs %}
+    {% snippet 'showcase/snippets/showcase_info.html', pkg=pkg %}
   {% endblock %}
 
   {% block package_social %}

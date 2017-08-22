@@ -3,12 +3,9 @@ import sqlalchemy
 import ckan.plugins.toolkit as toolkit
 import ckan.lib.dictization.model_dictize as model_dictize
 from ckan.lib.navl.dictization_functions import validate
-from ckan.logic import NotAuthorized
-
 from ckanext.showcase.logic.schema import (showcase_package_list_schema,
                                            package_showcase_list_schema)
 from ckanext.showcase.model import ShowcasePackageAssociation, ShowcaseAdmin
-
 import logging
 log = logging.getLogger(__name__)
 
@@ -73,21 +70,15 @@ def showcase_package_list(context, data_dict):
     # get a list of package ids associated with showcase id
     pkg_id_list = ShowcasePackageAssociation.get_package_ids_for_showcase(
         validated_data_dict['showcase_id'])
-
-    pkg_list = []
-    if pkg_id_list is not None:
+    if pkg_id_list:
         # for each package id, get the package dict and append to list if
         # active
-        for pkg_id in pkg_id_list:
-            try:
-                pkg = toolkit.get_action('package_show')(context,
-                                                         {'id': pkg_id})
-                if pkg['state'] == 'active':
-                    pkg_list.append(pkg)
-            except NotAuthorized:
-                log.debug(
-                    'Not authorized to access Package with ID: ' + str(pkg_id))
-    return pkg_list
+        pkg_id_list = [pkg[0] for pkg in pkg_id_list]
+        q = 'id:({0})'.format(' OR '.join(pkg_id_list))
+        query = toolkit.get_action('package_search')(
+                context, {'q': q, 'rows': 1000})
+        return query['results']
+    return []
 
 
 @toolkit.side_effect_free
