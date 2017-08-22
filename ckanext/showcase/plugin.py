@@ -20,6 +20,8 @@ import ckanext.showcase.logic.schema as showcase_schema
 import ckanext.showcase.logic.helpers as showcase_helpers
 from ckanext.showcase.model import setup as model_setup
 from ckanext.showcase import SC_CTRL_NAME
+from ckan.lib.navl.dictization_functions import validate
+from ckanext.showcase.model import ShowcasePackageAssociation
 
 c = tk.c
 _ = tk._
@@ -217,9 +219,21 @@ class ShowcasePlugin(plugins.SingletonPlugin, lib_plugins.DefaultDatasetForm):
                                  qualified=True)
 
         # Add dataset count
-        pkg_dict[u'num_datasets'] = len(
-            tk.get_action('ckanext_showcase_package_list')(
-                context, {'showcase_id': pkg_dict['id']}))
+        validated_data_dict, errors = validate(
+            {'showcase_id': pkg_dict['id']},
+            showcase_schema.showcase_package_list_schema(),
+            context)
+        if errors:
+            raise tk.ValidationError(errors)
+
+        pkg_id_list = ShowcasePackageAssociation.get_package_ids_for_showcase(
+            validated_data_dict['showcase_id'])
+        pkg_id_list = [pkg[0] for pkg in pkg_id_list]
+        q = 'id:({0})'.format(' OR '.join(pkg_id_list))
+        query = tk.get_action('package_search')(
+                context, {'q': q})
+
+        pkg_dict[u'num_datasets'] = query['count']
 
         # Rendered notes
         pkg_dict[u'showcase_notes_formatted'] = \

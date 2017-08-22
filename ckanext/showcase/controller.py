@@ -148,10 +148,39 @@ class ShowcaseController(PackageController):
         except NotAuthorized:
             abort(401, _('Unauthorized to read showcase'))
 
-        # get showcase packages
-        c.showcase_pkgs = get_action('ckanext_showcase_package_list')(
-            context, {'showcase_id': c.pkg_dict['id']})
+        try:
+            page = self._get_page_number(request.params)
+        except AttributeError:
+            # in CKAN >= 2.5 _get_page_number has been moved
+            page = h.get_page_number(request.params)
 
+        limit = int(config.get('ckan.datasets_per_page', 20))
+
+        pkg_id_list = SPA.get_package_ids_for_showcase(c.pkg_dict['id'])
+        pkg_id_list = [pkg[0] for pkg in pkg_id_list]
+        q = 'id:({0})'.format(' OR '.join(pkg_id_list))
+        data_dict = {
+            'q': q,
+            'rows': limit,
+            'start': (page - 1) * limit,
+        }
+        query = get_action('package_search')(context, data_dict)
+        c.showcase_pkgs = query['results']
+
+        def pager_url(q=None, page=None):
+            params = []
+            params.append(('page', page))
+            url = h.url_for(controller=SC_CTRL_NAME, action='read',
+                            id=c.pkg_dict['name'])
+            return url_with_params(url, params)
+
+        c.page = h.Page(
+            collection=query['results'],
+            page=page,
+            url=pager_url,
+            item_count=query['count'],
+            items_per_page=limit
+        )
         package_type = DATASET_TYPE_NAME
         return render(self._read_template(package_type),
                       extra_vars={'dataset_type': package_type})
